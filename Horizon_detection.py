@@ -105,6 +105,40 @@ def draw_horizon(frame: np.ndarray, roll: float , pitch: float,
 
 
 
+def detect_horizon_line(image_grayscaled):
+    """Detect the horizon's starting and ending points in the given image
+    The horizon line is detected by applying Otsu's threshold method to
+    separate the sky from the remainder of the image.
+    :param image_grayscaled: grayscaled image to detect the horizon on, of
+     shape (height, width)
+    :type image_grayscale: np.ndarray of dtype uint8
+    :return: the (x1, x2, y1, y2) coordinates for the starting and ending
+     points of the detected horizon line
+    :rtype: tuple(int)
+    """
+
+    msg = ('`image_grayscaled` should be a grayscale, 2-dimensional image '
+           'of shape (height, width).')
+    assert image_grayscaled.ndim == 2, msg
+    image_blurred = cv2.GaussianBlur(image_grayscaled, ksize=(3, 3), sigmaX=0)
+
+    _, image_thresholded = cv2.threshold(
+        image_blurred, thresh=0, maxval=1,
+        type=cv2.THRESH_BINARY+cv2.THRESH_OTSU
+    )
+    image_thresholded = image_thresholded - 1
+    image_closed = cv2.morphologyEx(image_thresholded, cv2.MORPH_CLOSE,
+                                    kernel=np.ones((9, 9), np.uint8))
+
+    # horizon_x1 = 0
+    # horizon_x2 = image_grayscaled.shape[1] - 1
+    # horizon_y1 = max(np.where(image_closed[:, horizon_x1] == 0)[0])
+    # horizon_y2 = max(np.where(image_closed[:, horizon_x2] == 0)[0])
+
+    # return horizon_x1, horizon_x2, horizon_y1, horizon_y2
+    return image_closed
+
+
 
 def keyboard_input():
     client = airsim.MultirotorClient()
@@ -212,18 +246,21 @@ def video_output():
         img1d = np.fromstring(in_image.image_data_uint8, dtype=np.uint8) # get numpy array
         image = img1d.reshape(in_image.height, in_image.width, 3) # reshape array to 3 channel image array H X W X 3
 
-        # img_gray = cv2.cvtColor(image,cv2.COLOR_BGR2GRAY)
-        #img_blur = cv2.GaussianBlur(img_gray, (3,3), 0) 
+        img_gray = cv2.cvtColor(image,cv2.COLOR_BGR2GRAY)
+        # img_blur = cv2.GaussianBlur(img_gray, (15,15), 0)
+        # ret3,th3 = cv2.threshold(img_blur,250,255,cv2.THRESH_BINARY+cv2.THRESH_OTSU)
         # Sobel Edge Detection
-        #sobelx = cv2.Sobel(src=img_blur, ddepth=cv2.CV_64F, dx=1, dy=0, ksize=5) # Sobel Edge Detection on the X axis
-        #sobely = cv2.Sobel(src=img_blur, ddepth=cv2.CV_64F, dx=0, dy=1, ksize=5) # Sobel Edge Detection on the Y axis
+        # sobelx = cv2.Sobel(src=img_blur, ddepth=cv2.CV_64F, dx=1, dy=0, ksize=5) # Sobel Edge Detection on the X axis
+        # sobely = cv2.Sobel(src=img_blur, ddepth=cv2.CV_64F, dx=0, dy=1, ksize=5) # Sobel Edge Detection on the Y axis
         #sobelxy = cv2.Sobel(src=img_blur, ddepth=cv2.CV_64F, dx=1, dy=1, ksize=5) # Combined X and Y Sobel Edge Detection
-        # edges = cv2.Canny(image=img_gray, threshold1=100, threshold2=200) # Canny Edge
+        # edges = cv2.Canny(image=img_blur, threshold1= 86, threshold2=170, apertureSize = 3) # Canny Edge
+        # horizon_x1, horizon_x2, horizon_y1, horizon_y2 = detect_horizon_line(img_gray)
 
-        # create artificial horizon
-        draw_horizon(image, -roll, pitch, 120, (0,0,255), True)
+        img = cv2.cvtColor(detect_horizon_line(img_gray), cv2.COLOR_GRAY2BGR)
+        # # create artificial horizon
+        draw_horizon(img, -roll, pitch, 120, (0,0,255), True)
         # show image
-        cv2.imshow('image', image)
+        cv2.imshow('image', img)
 
         # cv2.imshow('image', image)
         inkey = cv2.waitKey(1)
