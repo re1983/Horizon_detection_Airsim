@@ -246,21 +246,21 @@ def video_output():
         img1d = np.fromstring(in_image.image_data_uint8, dtype=np.uint8) # get numpy array
         image = img1d.reshape(in_image.height, in_image.width, 3) # reshape array to 3 channel image array H X W X 3
 
-        img_gray = cv2.cvtColor(image,cv2.COLOR_BGR2GRAY)
-        # img_blur = cv2.GaussianBlur(img_gray, (15,15), 0)
-        # ret3,th3 = cv2.threshold(img_blur,250,255,cv2.THRESH_BINARY+cv2.THRESH_OTSU)
-        # Sobel Edge Detection
-        # sobelx = cv2.Sobel(src=img_blur, ddepth=cv2.CV_64F, dx=1, dy=0, ksize=5) # Sobel Edge Detection on the X axis
-        # sobely = cv2.Sobel(src=img_blur, ddepth=cv2.CV_64F, dx=0, dy=1, ksize=5) # Sobel Edge Detection on the Y axis
-        #sobelxy = cv2.Sobel(src=img_blur, ddepth=cv2.CV_64F, dx=1, dy=1, ksize=5) # Combined X and Y Sobel Edge Detection
-        # edges = cv2.Canny(image=img_blur, threshold1= 86, threshold2=170, apertureSize = 3) # Canny Edge
-        # horizon_x1, horizon_x2, horizon_y1, horizon_y2 = detect_horizon_line(img_gray)
+        # img_gray = cv2.cvtColor(image,cv2.COLOR_BGR2GRAY)
+        # # img_blur = cv2.GaussianBlur(img_gray, (15,15), 0)
+        # # ret3,th3 = cv2.threshold(img_blur,250,255,cv2.THRESH_BINARY+cv2.THRESH_OTSU)
+        # # Sobel Edge Detection
+        # # sobelx = cv2.Sobel(src=img_blur, ddepth=cv2.CV_64F, dx=1, dy=0, ksize=5) # Sobel Edge Detection on the X axis
+        # # sobely = cv2.Sobel(src=img_blur, ddepth=cv2.CV_64F, dx=0, dy=1, ksize=5) # Sobel Edge Detection on the Y axis
+        # #sobelxy = cv2.Sobel(src=img_blur, ddepth=cv2.CV_64F, dx=1, dy=1, ksize=5) # Combined X and Y Sobel Edge Detection
+        # # edges = cv2.Canny(image=img_blur, threshold1= 86, threshold2=170, apertureSize = 3) # Canny Edge
+        # # horizon_x1, horizon_x2, horizon_y1, horizon_y2 = detect_horizon_line(img_gray)
 
-        img = cv2.cvtColor(detect_horizon_line(img_gray), cv2.COLOR_GRAY2BGR)
+        # img = cv2.cvtColor(detect_horizon_line(img_gray), cv2.COLOR_GRAY2BGR)
         # # create artificial horizon
-        draw_horizon(img, -roll, pitch, 120, (0,0,255), True)
+        draw_horizon(image, -roll, pitch, 120, (0,0,255), True)
         # show image
-        cv2.imshow('image', img)
+        cv2.imshow('image', image)
 
         # cv2.imshow('image', image)
         inkey = cv2.waitKey(1)
