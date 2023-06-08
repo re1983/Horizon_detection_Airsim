@@ -8,7 +8,7 @@ import pprint
 import sys
 threads =[]
 bottom_size = 256
-Altitude = -20
+Altitude = -40
 # connect to the AirSim simulator
 
 client = airsim.MultirotorClient()
@@ -34,8 +34,8 @@ f2 = client.takeoffAsync(vehicle_name="Drone2").join()
 # print("state: %s" % s)
 # airsim.wait_key('Press any key to move vehicles')
 
-f1 = client.moveToPositionAsync(0, 0, Altitude-1.5, 10, vehicle_name="Drone1")
-f2 = client.moveToPositionAsync(7, 7, Altitude-3, 10, vehicle_name="Drone2")
+f1 = client.moveToPositionAsync(0, 0, Altitude, 30, vehicle_name="Drone1")
+f2 = client.moveToPositionAsync(1, 0, Altitude, 30, vehicle_name="Drone2")
 f1.join()
 f2.join()
 
@@ -193,6 +193,7 @@ def drone_fly_circle():
     client.enableApiControl(True, "Drone2")
     client.armDisarm(True, "Drone2")
     running = True
+    index = 1
     while running:
         if keyboard.is_pressed('esc'):
             running = False
@@ -201,15 +202,21 @@ def drone_fly_circle():
             # return
             continue
         else:
-            client.moveToPositionAsync(7, -7, Altitude-3, 4, vehicle_name="Drone2").join()
-            print("Drone2: 7, -7, Altitude-3")
+            # client.moveToPositionAsync(7, -7, Altitude-3, 4, vehicle_name="Drone2").join()
+            # print("Drone2: 7, -7, Altitude-3")
             # time.sleep(2.5)
-            client.moveToPositionAsync(1, 0, Altitude, 4, vehicle_name="Drone2").join()
-            print("Drone2: 1, 0, Altitude")
-            # time.sleep(2.5)
-            client.moveToPositionAsync(7, 7, Altitude-3, 4, vehicle_name="Drone2").join()
-            print("Drone2: 7, 7, Altitude-3")
-            # time.sleep(12.5)
+            # client.moveToPositionAsync(1, 0, Altitude, 4, vehicle_name="Drone2").join()
+            # print("Drone2: 1, 0, Altitude")
+            # # time.sleep(2.5)
+            # client.moveToPositionAsync(7, 7, Altitude-3, 4, vehicle_name="Drone2").join()
+            # print("Drone2: 7, 7, Altitude-3")
+            # # time.sleep(12.5)
+            client.moveToPositionAsync(1*index, 0, Altitude-3, 3, vehicle_name="Drone2").join()
+            index += 1
+            client.moveToPositionAsync(1*index, 0, Altitude+1.5, 3, vehicle_name="Drone2").join()
+            index += 1
+            print(index)
+
     
     client.armDisarm(False, "Drone2")
     client.reset()
