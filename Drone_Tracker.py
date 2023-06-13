@@ -14,6 +14,9 @@ Altitude = -40
 client = airsim.MultirotorClient()
 client.confirmConnection()
 client.reset()
+camera_id = 0
+camera_info = client.simGetCameraInfo(str(camera_id))
+print("CameraInfo:", camera_info)
 client.enableApiControl(True, "Drone1")
 client.enableApiControl(True, "Drone2")
 
